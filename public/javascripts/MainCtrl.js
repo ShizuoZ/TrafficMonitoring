@@ -19,7 +19,11 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
     // Do stuff with your $scope.
     // Note: Some of the directives require at least something to be defined originally!
     // e.g. $scope.markers = []
+    $scope.setPanel = function (renderer) {
+    renderer.setPanel(document.getElementById('panelId'));
+    }
     $scope.formData = {};
+
 /*-------------------------------------------------------------------------------------------------------*/
 /*                                          Draw chart                                                   */
 /*-------------------------------------------------------------------------------------------------------*/
@@ -29,7 +33,15 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
     $scope.chartdata1 = [];
     $http.get('/api/incidents')
         .success(function(data){  
-            $scope.chartdata1.push(data);
+            var results = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            for(var i = 0; i < data.length; i++){
+              var obj = data[i].created_at;
+              var date = new Date(obj);
+              var num = parseInt(date.getHours());
+              results[num]++;
+            }
+            console.log(results);
+            $scope.chartdata1.push(results);
         })
         .error(function(data){
             console.log('Error' + data);
@@ -40,6 +52,7 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
 /*-------------------------------------------------------------------------------------------------------*/
 /*                                          Draw map                                                     */
 /*-------------------------------------------------------------------------------------------------------*/
+ function refresh(){
     $scope.map = {
         center: {
             latitude: 40.523325,
@@ -49,14 +62,6 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
         zoom: 13,
         fit: true,
         pan: 1,
-        events: {
-            tilesloaded: function (maps, eventName, args) {
-            },
-            dragend: function (maps, eventName, args) {
-            },
-            zoom_changed: function (maps, eventName, args) {
-            }
-        }
     };
     $scope.marker = {
         id: 0,
@@ -71,9 +76,8 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
             dragend: function (marker, eventName, args) {
                 var lat = marker.getPosition().lat();
                 var lon = marker.getPosition().lng();
-                // $log.log(lat);
-                // $log.log(lon);
-
+                //console.log(lat);
+                //console.log(lon);
                 $scope.marker.options = {
                     draggable: true,
                     labelContent: "",
@@ -90,6 +94,7 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
         .then(function(maps) {
             $scope.directionsService = new maps.DirectionsService();
             $scope.directionsDisplay = new google.maps.DirectionsRenderer();
+            $scope.geocoder = new google.maps.Geocoder();
         });
 
     uiGmapIsReady.promise(1)                     // this gets all (ready) map instances - defaults to 1 for the first map
@@ -97,12 +102,16 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
             instances.forEach(function(inst) {   // instances is an array object
                 $scope.maps = inst.map;
                 $scope.directionsDisplay.setMap(inst.maps); // if only 1 map it's found at index 0 of array
+                $scope.directionsDisplay.setPanel(document.getElementById('right-panel'));
             });
     });
+}
+refresh();
 /*-------------------------------------------------------------------------------------------------------*/
 /*                                          Form Controller                                              */
 /*-------------------------------------------------------------------------------------------------------*/
     $scope.update = function() {
+        refresh();
         // console.log($scope.ori_detail.name);
         // console.log($scope.des_detail.name);
         var request = {
@@ -113,17 +122,16 @@ mainCtrl.controller('MainCtrl', function($scope, $http, $log, uiGmapGoogleMapApi
         }
         $scope.directionsDisplay.setMap($scope.maps);
         $scope.directionsService.route(request, function (response, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                $scope.directionsDisplay.setDirections(response);
-                // for (var i = 0, len = response.routes.length; i < len; i++) {
-                //     new google.maps.DirectionsRenderer({
-                //         map: $scope.maps,
-                //         directions: response,
-                //         routeIndex: i
-                //     });
-                // }
+            if (status === google.maps.DirectionsStatus.OK) {
+                
+            $scope.directionsDisplay.setDirections(response);
             }
         });
+
+        //$scope.directions = googleDirections.getDirections(request).then(function(directions) {
+        //    console.log(directions);
+        //    return directions;
+        //});
 
         $scope.marker = {};
 

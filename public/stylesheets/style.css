@@ -13,3 +13,7 @@ body, html {
 .row{
     padding: 30px;
 }
+#right-panel {
+        max-height: 400px;
+        overflow-y:scroll; 
+}
