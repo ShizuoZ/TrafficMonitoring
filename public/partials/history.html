@@ -2,18 +2,31 @@
 <div id="history"> <!-- ng-controller="HisCtrl" -->
 	<table class="table table-striped">
 	  <thead>
-	  	<th>Origin</th>
-	  	<th>Destination</th>
-	  	<th style="text-align: center">Time</th>
+	  	<th id ="ori_button1" ng-click ="sortData('ori')"><span id ="ori_button" class="glyphicon glyphicon-triangle-bottom"></span>Origin</th>
+	  	<th id ="des_button1" ng-click ="sortData('des')"><span id ="des_button" class="glyphicon glyphicon-triangle-bottom"></span>Destination</th>
+	  	<th id ="time_button1" style="text-align: center" ng-click ="sortData('time')"><span id ="time_button" class="glyphicon glyphicon-triangle-bottom"></span> Time </th>
+	  	<th id ="date_button1" style="text-align: center" ng-click ="sortData('created_at')"><span id ="date_button" class="glyphicon glyphicon-triangle-bottom"></span>Date</th>
 		<th style="text-align: center">Delete</th>
 	  </thead>
 	  <tbody>
-	  	<tr ng-repeat="x in historys">
+	  	<tr ng-repeat="x in historys | orderBy:sortColumn:reverseSort">
 	  		<td>{{x.ori}}</td>
 	  		<td>{{x.des}}</td>
-	  		<td style="text-align: center">{{x.time}}</td>
+	  		<td >{{x.time}}</td>
+	  		<td style="text-align: center">{{x.created_at|date:"mediumDate"}}</td>
 			<td style="text-align: center"><span class="glyphicon glyphicon-remove" ng-click="deleteHistory(x._id)"></span></td>
 	  	</tr>
 	  </tbody>
 	</table>
+	<div class="row">
+		<div class="col-md-6 col-sm-12 col-xs-12">
+            <label style="padding-bottom:5px">Statistics for travel time</label>
+            <canvas class="chart chart-pie" chart-data="chartdata" chart-labels="labels"></canvas> 
+    	</div>
+        <div class="col-md-6 col-sm-12 col-xs-12">
+            <label style="padding-bottom:5px">Statistics for travel time</label>
+            <canvas class="chart chart-bar" chart-data="chartdata" chart-labels="labels"></canvas> 
+        </div>
+	</div>
+	
 </div>

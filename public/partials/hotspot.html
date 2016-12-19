@@ -5,13 +5,13 @@
             <!-- map -->
             <div class="col-md-8 col-sm-12 col-xs-12">
 				<div id="map">
-					<ui-gmap-google-map center='map.center' zoom='map.zoom' id='maps'>
-						<ui-gmap-markers models="Markers" coords="'self'" icon="'icon'" events="events">
-                        <!-- <ui-gmap-windows show="window.show" closeClick="window.closeClick()" coords="window.model" options="window.options">
-                            <div style="color: black">
-                            {{map.window.title}}
-                            </div>
-                        </ui-gmap-windows> -->
+					<ui-gmap-google-map control="map.control" center='map.center' zoom='map.zoom' id='maps' events="map.events">
+                    <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></ui-gmap-layer>
+						<ui-gmap-markers 
+                            models="Markers" 
+                            coords="'self'" 
+                            icon="'icon'" 
+                            events="events">
                         </ui-gmap-markers>
 					</ui-gmap-google-map>
 				</div>
@@ -75,5 +75,15 @@
 			<label style="padding-bottom:5px">Traffic pattern for selected location: {{place}}</label>
 			<canvas class="chart chart-line" chart-data="chartdata2" chart-labels="labels2"></canvas>
 		</div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-12 col-xs-12">
+            <label style="padding-bottom:5px">Severity level distribution for selected location: {{place}}</label>
+            <canvas class="chart chart-doughnut" chart-data="chartdata3" chart-labels="labels3"></canvas> 
+        </div>
+        <div class="col-md-6 col-sm-12 col-xs-12">
+            <label style="padding-bottom:5px">Weather condition for selected location: {{place}} </label>
+            <canvas class="chart chart-doughnut" chart-data="chartdata4" chart-labels="labels4"></canvas> 
+        </div>
 	</div>
 </div>
